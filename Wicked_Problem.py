@@ -6,16 +6,21 @@ PROBLEM_AUTHORS = ['H. Kaushik']
 PROBLEM_CREATION_DATE = "29-MAY-2019"
 PROBLEM_DESC=\
 '''
-This formulation of the Farmer, Fox, Chicken, and Grain problem uses generic
-Python 3 constructs and has been tested with Python 3.6.
+This formulation of the wicked problem of disease (with a focus on HIV/AIDS)
+uses generic Python 3 constructs and has been tested with Python 3.6.
 It is designed to work according to the QUIET2 tools interface.
+
+Int_Solve_Client can  be used such that the user can choose an action among 
+valid operations.
 '''
 
 BUDGET = 28000000000
 
+# 8 Regions considered
 REGIONS = {0 : 'East and Southern Africa', 1 : 'Western and Central Africa', 2 : 'Asia and Pacific', 3 : 'Western and Central Europe and North America', \
     4 : 'Latin America', 5 : 'Eastern Europe and Central Asia', 6 : 'Carribean', 7 : 'Middle East and North Africa', 8 : 'a cure', 9 : 'budgetary reasons.'}
 
+# Dictionary of conditions relating to HIV/AIDS based on regions
 INIT_DICT = {0: {'cases' : 19600000, 'sf' : 0.0408, 'deaths' : 426666, 'treatment' : 0.66}, 1 : {'cases' : 6100000, 'sf' : 0.0607, 'deaths' : 197333, 'treatment' : 0.40}, \
     2 : {'cases' : 5200000, 'sf' : 0.0538, 'deaths' : 149333, 'treatment' : 0.53}, 3 : {'cases' : 2200000, 'sf' : 0.0318, 'deaths' : 37351, 'treatment' : 0.76}, \
     4 : {'cases' : 1800000, 'sf' : 0.0556, 'deaths' : 53329, 'treatment' : 0.61}, 5 : {'cases' : 1400000, 'sf' : 0.0929, 'deaths' : 69334, 'treatment' : 0.36}, \
