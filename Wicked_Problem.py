@@ -83,7 +83,7 @@ class State:
     def move(self, a, loc):
         news = self.copy()
         news.quarter += 1
-        if(news.quarter == 5):
+        if news.quarter == 5:
             news.year += 1
             news.quarter = 1
             news.yearly_cost = 0
@@ -92,22 +92,34 @@ class State:
                 news.d[i]['deaths'] = int(self.d[i]['deaths'] * 0.8)
                 news.d[i]['cases'] = int(self.d[i]['cases'] * 0.9)
                 news.d[i]['sf'] = round(self.d[i]['sf'] * 0.9, 4)
+
+                if news.d[i]['sf'] > 1:
+                    news.d[loc]['sf']= 0.999
             
         if a == 'Research':
             news.research_start = news.year * 4 + news.quarter
             news.yearly_cost += action_costs['Research']
             
         elif a == 'Drugs':
-            news.d[loc]['deaths'] = int(self.d[loc]['deaths'] * 0.95)
-            news.d[loc]['treatment'] = round(self.d[loc]['treatment'] * 1.2, 3)
+            news.d[loc]['deaths'] = int(self.d[loc]['deaths'] * 0.9)
+            news.d[loc]['treatment'] = round(self.d[loc]['treatment'] * 1.3, 3)
+            news.d[loc]['sf'] = round(self.d[loc]['sf'] * 0.9, 4)
             news.yearly_cost += action_costs['Drugs']
             #exit(0)
         elif a == 'Education':
-            news.d[loc]['sf'] = round(self.d[loc]['sf'] * 0.9, 4)
+            news.d[loc]['sf'] = round(self.d[loc]['sf'] * 0.7, 4)
             news.d[loc]['treatment'] = round(self.d[loc]['treatment'] * 1.1, 3)
             news.d[loc]['cases'] = int(self.d[loc]['cases'] * 0.9)
             news.yearly_cost += action_costs['Education']
             #exit(0)
+
+        if loc < 8:
+            if news.d[loc]['sf'] > 1:
+                news.d[loc]['sf'] = 0.999
+
+            if news.d[loc]['treatment'] > 1:
+                news.d[loc]['treatment'] = 0.999
+
         return news
 
             
