@@ -18,7 +18,7 @@ BUDGET = 28000000000
 
 # 8 Regions considered
 REGIONS = {0 : 'East and Southern Africa', 1 : 'Western and Central Africa', 2 : 'Asia and Pacific', 3 : 'Western and Central Europe and North America', \
-    4 : 'Latin America', 5 : 'Eastern Europe and Central Asia', 6 : 'Carribean', 7 : 'Middle East and North Africa', 8 : 'a cure', 9 : 'budgetary reasons.'}
+    4 : 'Latin America', 5 : 'Eastern Europe and Central Asia', 6 : 'Carribean', 7 : 'Middle East and North Africa', 8 : 'new treatment', 9 : 'budgetary reasons.'}
 
 # Dictionary of conditions relating to HIV/AIDS based on regions
 INIT_DICT = {0: {'cases' : 19600000, 'sf' : 0.0408, 'deaths' : 426666, 'treatment' : 0.66}, 1 : {'cases' : 6100000, 'sf' : 0.0607, 'deaths' : 197333, 'treatment' : 0.40}, \
@@ -48,8 +48,9 @@ class State:
     def __str__(self):
         # Produces a textual description of a state.
         # Might not be needed in normal operation with GUIs.
-        s = 'Time from start: ' + str(self.quarter + 4 * self.year) + ' quarters. \n'
-        if self.research_start != -1: s += 'Research in progress.\n'
+        s = 'Year: ' + str(self.year) + ' Quarter: ' + str(self.quarter) + '. \n'
+        if self.research_start != -1 and self.research_start < 12: s += 'Research in progress.\n'
+        elif self.research_start >= 12: s += 'Research complete.\n'
         s += '$' + str(BUDGET - self.yearly_cost) + ' left to invest this year.\n'
         for i in range(8):
             s += REGIONS[i] + ': ' + str(self.d[i]['cases']) + ' cases, ' + str(self.d[i]['sf']) + ' spreading factor, ' + \
@@ -68,11 +69,9 @@ class State:
     def can_move(self, a, loc):
         try:
             yc = self.yearly_cost
-            if self.quarter == 4:
-                yc = 0
             if self.research_start != -1 and a == 'Research':
                 return False
-            if(action_costs[a] + yc <= BUDGET):
+            if action_costs[a] + yc <= BUDGET:
                 return True
             else: 
                 return False
@@ -85,7 +84,8 @@ class State:
         news.quarter += 1
         if news.quarter == 5:
             news.year += 1
-            news.quarter = 1
+            news.quarter = 1 
+        if news.quarter == 1:
             news.yearly_cost = 0
         if news.research_start != -1 and (news.year * 4 + news.quarter) - news.research_start > 12:
             for i in range(8):
@@ -120,8 +120,12 @@ class State:
             if news.d[loc]['treatment'] > 1:
                 news.d[loc]['treatment'] = 0.999
 
-        return news
+        for i in range(8):
+            if news.d[i]['sf'] > 0:
+                news.d[i]['cases'] += int(news.d[i]['cases'] * news.d[i]['sf'])
+                news.d[i]['cases'] -= news.d[i]['deaths']
 
+        return news
             
 
 
