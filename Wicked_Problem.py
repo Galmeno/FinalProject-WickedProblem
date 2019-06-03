@@ -26,7 +26,7 @@ INIT_DICT = {0: {'cases' : 19600000, 'sf' : 0.0408, 'deaths' : 426666, 'treatmen
     4 : {'cases' : 1800000, 'sf' : 0.0556, 'deaths' : 53329, 'treatment' : 0.61}, 5 : {'cases' : 1400000, 'sf' : 0.0929, 'deaths' : 69334, 'treatment' : 0.36}, \
     6 : {'cases' : 310000, 'sf' : 0.0484, 'deaths' : 8000, 'treatment' : 0.57}, 7 : {'cases' : 220000, 'sf' : 0.0818, 'deaths' : 9600, 'treatment' : 0.29}}
 
-CREATE_INITIAL_STATE = lambda: State(INIT_DICT, 0, 0, 0, -1)
+CREATE_INITIAL_STATE = lambda: State(INIT_DICT, 0, 1, 0, -1)
 
 action_costs = {'Research' : 12000000000, 'Drugs' : 8000000000, 'Education' : 6000000000, 'nothing' : 0}
 
