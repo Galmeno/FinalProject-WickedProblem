@@ -6,7 +6,7 @@ The particular heuristic incorporates all the factors that determine goal state.
 
 '''
 
-#from Wicked_Problem import *
+from Wicked_Problem import *
 
 def h(s):
   ''' returns the number of regions that have not reached their goal states '''

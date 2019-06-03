@@ -9,7 +9,7 @@ for all regions to reach a goal state is always higher than the number of region
 
 '''
 
-#from Wicked_Problem import *
+from Wicked_Problem import *
 
 def h(s):
   ''' returns the number of regions that have not reached their goal states '''
