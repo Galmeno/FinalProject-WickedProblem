@@ -25,7 +25,7 @@ def h(s):
         sum += (s.d[i]['sf'] - goal_state_sf[i])
     if(s.d[i]['treatment'] < goal_state_treatment):
         sum += goal_state_treatment - s.d[i]['treatment']
-
-  sum = (sum * 100) + rs
-  sum = sum / (rc * 5 + 1)
+  if sum != 0:
+    sum = sum * 100 + rs
+    sum = sum / (rc * 5 + 1)
   return sum

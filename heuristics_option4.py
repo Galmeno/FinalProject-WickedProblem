@@ -16,12 +16,9 @@ def h(s):
   goal_state_sf = [0.0204, 0.03035, 0.0269, 0.0159, 0.0278, 0.04645, 0.0242, 0.0409]
   goal_state_treatment = 0.9
 
-  mult = 0.5
-
-  # Need to check only for start - not while it is conducting.
-  if s.research_start == 1:
-      # if research is an option, we want to fund research.
-      mult = 1
+  # if research is being started in a state make that a higher priority
+  # if the year is almost done (last quarter), gear towards the action that depletes the budget most
+  # count the difference of sf and goal states and the difference of treatment and goal states
 
   sum = 0
   
@@ -30,5 +27,4 @@ def h(s):
     tp = s.d[i]['treatment'] / goal_state_treatment
     sum += sfp + tp
 
-  sum = sum * mult 
   return sum

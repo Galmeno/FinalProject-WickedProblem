@@ -23,7 +23,8 @@ VERBOSE = False  # Set to True to see progress; but it slows the search.
 import sys
 
 if sys.argv == [''] or len(sys.argv) < 2:
-    import heuristics_option2 as Problem
+    #import heuristics_option2 as Problem
+    import heuristics_option4 as Problem
 else:
     import importlib
 
@@ -236,6 +237,8 @@ def backtrace(S):
     print("Solution path: ")
     for s in path:
         print(s)
+        print(h(s))
+        print("---")
     return path
 
 
