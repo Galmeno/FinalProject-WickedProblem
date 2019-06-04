@@ -124,9 +124,10 @@ def runAStar():
     print('MAX_OPEN_LENGTH = ' + str(MAX_OPEN_LENGTH))
     # print("The CLOSED list is: ", ''.join([str(s)+' ' for s in CLOSED]))
 
-
+exit1 = 0
 def AStar(initial_state):
     '''AStar. This is the actual algorithm.'''
+    global exit1
     global g, f, COUNT, BACKLINKS, MAX_OPEN_LENGTH, CLOSED, TOTAL_COST
     CLOSED = []
     BACKLINKS[initial_state] = None
@@ -151,6 +152,9 @@ def AStar(initial_state):
         #         Put S on CLOSED.
         #         If S is a goal state, output its description
         (S, P) = OPEN.delete_min()
+        print("------------ **************")
+        print(S, P)
+
         # print("In Step 3, returned from OPEN.delete_min with results (S,P)= ", (str(S), P))
         CLOSED.append(S)
 
@@ -208,6 +212,11 @@ def AStar(initial_state):
                 f[new_state] = new_f
 
         #print_state_queue("OPEN", OPEN)
+        # exit1 = exit1+1
+        # print("------------------")
+        # print(exit1)
+        # if exit1 == 2:
+        #     exit(1)
     # STEP 6. Go to Step 2.
     return None  # No more states on OPEN, and no goal reached.
 

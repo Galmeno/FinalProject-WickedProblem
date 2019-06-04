@@ -32,18 +32,19 @@ INIT_DICT = {0: {'cases': 19600000, 'sf': 0.0408, 'deaths': 426666, 'treatment':
              6: {'cases': 310000, 'sf': 0.0484, 'deaths': 8000, 'treatment': 0.57},
              7: {'cases': 220000, 'sf': 0.0818, 'deaths': 9600, 'treatment': 0.29}}
 
-CREATE_INITIAL_STATE = lambda: State(INIT_DICT, 1, 0, 0, -1)
+CREATE_INITIAL_STATE = lambda: State(INIT_DICT, 1, 0, 0, -1, 0)
 
 action_costs = {'Research': 12000000000, 'Drugs': 8000000000, 'Education': 6000000000, 'nothing': 0}
 
 
 class State:
-    def __init__(self, d, q, y, yc, rs):
+    def __init__(self, d, q, y, yc, rs, rc):
         self.d = d
         self.quarter = q
         self.year = y
         self.yearly_cost = yc
         self.research_start = rs
+        self.rc_complete = rc
 
     def __eq__(self, s2):
         for i in range(8):
@@ -56,10 +57,10 @@ class State:
         # Produces a textual description of a state.
         # Might not be needed in normal operation with GUIs.
         s = 'Year: ' + str(self.year) + ' Quarter: ' + str(self.quarter) + '. \n'
-        if self.research_start != -1 and self.research_start < 12:
+        if self.research_start != -1:
             s += 'Research in progress.\n'
-        elif self.research_start >= 12:
-            s += 'Research complete.\n'
+        elif self.rc_complete > 0:
+            s += str(self.rc_complete) + ' research cycle(s) complete.\n'
         s += '$' + str(BUDGET - self.yearly_cost) + ' left to invest this year.\n'
         for i in range(8):
             s += REGIONS[i] + ': ' + str(self.d[i]['cases']) + ' cases, ' + str(
@@ -79,7 +80,7 @@ class State:
         for i in range(8):
             newd[i] = {'cases': self.d[i]['cases'], 'sf': self.d[i]['sf'], 'deaths': self.d[i]['deaths'],
                        'treatment': self.d[i]['treatment']}
-        return State(newd, self.quarter, self.year, self.yearly_cost, self.research_start)
+        return State(newd, self.quarter, self.year, self.yearly_cost, self.research_start, self.rc_complete)
 
     def can_move(self, a, loc):
         try:
@@ -101,23 +102,28 @@ class State:
             news.quarter = 1
         if news.quarter == 1:
             news.yearly_cost = 0
-        if news.research_start != -1 and (news.year * 4 + news.quarter) - news.research_start > 12:
+        if news.research_start > -1:
+            news.research_start += 1
+        if news.research_start == 12:
+            news.research_start = -1
+            news.rc_complete += 1
+        if news.rc_complete > 0:
             for i in range(8):
                 news.d[i]['deaths'] = int(self.d[i]['deaths'] * 0.8)
                 news.d[i]['cases'] = int(self.d[i]['cases'] * 0.9)
-                news.d[i]['sf'] = round(self.d[i]['sf'] * 0.9, 4)
+                news.d[i]['sf'] = round(self.d[i]['sf'] * (1.0 - 0.1 * news.rc_complete), 4)
 
                 if news.d[i]['sf'] > 1:
                     news.d[loc]['sf'] = 0.999
 
         if a == 'Research':
-            news.research_start = news.year * 4 + news.quarter
+            news.research_start = 0
             news.yearly_cost += action_costs['Research']
 
         elif a == 'Drugs':
             news.d[loc]['deaths'] = int(self.d[loc]['deaths'] * 0.9)
             news.d[loc]['treatment'] = round(self.d[loc]['treatment'] * 1.3, 3)
-            news.d[loc]['sf'] = round(self.d[loc]['sf'] * 0.9, 4)
+            news.d[loc]['sf'] = round(self.d[loc]['sf'] * 0.8, 4)
             news.yearly_cost += action_costs['Drugs']
             # exit(0)
         elif a == 'Education':

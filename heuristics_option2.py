@@ -16,10 +16,16 @@ def h(s):
   goal_state_sf = [0.0204, 0.03035, 0.0269, 0.0159, 0.0278, 0.04645, 0.0242, 0.0409]
   goal_state_treatment = 0.9
 
-  sum = 0
+  rc = s.rc_complete
+  rs = 12 - s.research_start
+  sum = 0.0
   for i in range(8):
-    sum += s.d[i]['sf'] - goal_state_sf[i]
-    sum += goal_state_treatment - s.d[i]['treatment']
+    time = s.quarter + 4 * s.year
+    if(s.d[i]['sf'] > goal_state_sf[i]):
+        sum += (s.d[i]['sf'] - goal_state_sf[i])
+    if(s.d[i]['treatment'] < goal_state_treatment):
+        sum += goal_state_treatment - s.d[i]['treatment']
 
+  sum = (sum * 100) + rs
+  sum = sum / (rc * 5 + 1)
   return sum
-
