@@ -23,8 +23,7 @@ VERBOSE = False  # Set to True to see progress; but it slows the search.
 import sys
 
 if sys.argv == [''] or len(sys.argv) < 2:
-    #import heuristics_option2 as Problem
-    import heuristics_option4 as Problem
+    import WickedProblemWithHeuristic2 as Problem
 else:
     import importlib
 
@@ -153,8 +152,8 @@ def AStar(initial_state):
         #         Put S on CLOSED.
         #         If S is a goal state, output its description
         (S, P) = OPEN.delete_min()
-        print("------------ **************")
-        print(S, P)
+        # print("------------ **************")
+        # print(S, P)
 
         # print("In Step 3, returned from OPEN.delete_min with results (S,P)= ", (str(S), P))
         CLOSED.append(S)
@@ -237,7 +236,11 @@ def backtrace(S):
     print("Solution path: ")
     for s in path:
         print(s)
-        print(h(s))
+        h0 = h(s)
+        # if(Problem.goal_test(s)):
+        #     print(0.0)
+        # else:
+        print(round(h(s), 2))
         print("---")
     return path
 

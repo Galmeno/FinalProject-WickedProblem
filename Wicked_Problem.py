@@ -17,20 +17,17 @@ PROBLEM_DESC = \
 BUDGET = 28000000000
 
 # 8 Regions considered
-REGIONS = {0: 'East and Southern Africa', 1: 'Western and Central Africa', 2: 'Asia and Pacific',
+REGIONS = {0: 'East and Southern Africa', 1: 'Western, Central, North Africa and Middle East', 2: 'Eastern Europe and Asia',
            3: 'Western and Central Europe and North America', \
-           4: 'Latin America', 5: 'Eastern Europe and Central Asia', 6: 'Carribean', 7: 'Middle East and North Africa',
-           8: 'new treatment', 9: 'budgetary reasons.'}
+           4: 'Latin America and Carribean', 5: 'new treatment', 6: 'budgetary reasons.'}
 
 # Dictionary of conditions relating to HIV/AIDS based on regions
-INIT_DICT = {0: {'cases': 19600000, 'sf': 0.0408, 'deaths': 426666, 'treatment': 0.66},
-             1: {'cases': 6100000, 'sf': 0.0607, 'deaths': 197333, 'treatment': 0.40}, \
-             2: {'cases': 5200000, 'sf': 0.0538, 'deaths': 149333, 'treatment': 0.53},
-             3: {'cases': 2200000, 'sf': 0.0318, 'deaths': 37351, 'treatment': 0.76}, \
-             4: {'cases': 1800000, 'sf': 0.0556, 'deaths': 53329, 'treatment': 0.61},
-             5: {'cases': 1400000, 'sf': 0.0929, 'deaths': 69334, 'treatment': 0.36}, \
-             6: {'cases': 310000, 'sf': 0.0484, 'deaths': 8000, 'treatment': 0.57},
-             7: {'cases': 220000, 'sf': 0.0818, 'deaths': 9600, 'treatment': 0.29}}
+INIT_DICT = {0: {'cases': 19600000, 'sf': 0.0408, 'deaths': 426666, 'treatment': 0.66}, \
+             1: {'cases': 6320000, 'sf': 0.0713, 'deaths': 206933, 'treatment': 0.345}, \
+             2: {'cases': 6600000, 'sf': 0.0734, 'deaths': 218667, 'treatment': 0.445}, \
+             3: {'cases': 2110000, 'sf': 0.0520, 'deaths': 61329, 'treatment': 0.59}, \
+             4: {'cases': 2200000, 'sf': 0.0318, 'deaths': 37351, 'treatment': 0.76}}
+             
 
 CREATE_INITIAL_STATE = lambda: State(INIT_DICT, 1, 0, 0, -1, 0)
 
@@ -47,7 +44,7 @@ class State:
         self.rc_complete = rc
 
     def __eq__(self, s2):
-        for i in range(8):
+        for i in range(5):
             for j in ['cases', 'sf', 'deaths', 'treatment']:
                 if self.d[i][j] != s2.d[i][j]:
                     return False
@@ -58,11 +55,11 @@ class State:
         # Might not be needed in normal operation with GUIs.
         s = 'Year: ' + str(self.year) + ' Quarter: ' + str(self.quarter) + '. \n'
         if self.research_start != -1:
-            s += 'Research in progress.\n'
-        elif self.rc_complete > 0:
+            s += 'Research in progress for ' + str(self.research_start) + ' quarters.\n'
+        if self.rc_complete > 0:
             s += str(self.rc_complete) + ' research cycle(s) complete.\n'
         s += '$' + str(BUDGET - self.yearly_cost) + ' left to invest this year.\n'
-        for i in range(8):
+        for i in range(5):
             s += REGIONS[i] + ': ' + str(self.d[i]['cases']) + ' cases, ' + str(
                 self.d[i]['sf']) + ' spreading factor, ' + \
                  str(self.d[i]['deaths']) + ' deaths, ' + str(
@@ -77,7 +74,7 @@ class State:
 
     def copy(self):
         newd = {}
-        for i in range(8):
+        for i in range(5):
             newd[i] = {'cases': self.d[i]['cases'], 'sf': self.d[i]['sf'], 'deaths': self.d[i]['deaths'],
                        'treatment': self.d[i]['treatment']}
         return State(newd, self.quarter, self.year, self.yearly_cost, self.research_start, self.rc_complete)
@@ -104,11 +101,11 @@ class State:
             news.yearly_cost = 0
         if news.research_start > -1:
             news.research_start += 1
-        if news.research_start == 12:
+        if news.research_start == 8:
             news.research_start = -1
             news.rc_complete += 1
         if news.rc_complete > 0:
-            for i in range(8):
+            for i in range(5):
                 news.d[i]['deaths'] = int(self.d[i]['deaths'] * 0.8)
                 news.d[i]['cases'] = int(self.d[i]['cases'] * 0.9)
                 news.d[i]['sf'] = round(self.d[i]['sf'] * (1.0 - 0.1 * news.rc_complete), 4)
@@ -133,14 +130,14 @@ class State:
             news.yearly_cost += action_costs['Education']
             # exit(0)
 
-        if loc < 8:
+        if loc < 5:
             if news.d[loc]['sf'] > 1:
                 news.d[loc]['sf'] = 0.999
 
             if news.d[loc]['treatment'] > 1:
                 news.d[loc]['treatment'] = 0.999
 
-        for i in range(8):
+        for i in range(5):
             if news.d[i]['sf'] > 0:
                 news.d[i]['cases'] += int(news.d[i]['cases'] * news.d[i]['sf'])
                 news.d[i]['cases'] -= news.d[i]['deaths']
@@ -149,7 +146,7 @@ class State:
 
 
 def goal_test(s):
-    for i in range(8):
+    for i in range(5):
         if s.d[i]['treatment'] < 0.9:
             return False
         if s.d[i]['sf'] / INIT_DICT[i]['sf'] > 0.5:
@@ -175,9 +172,9 @@ class Operator:
 
 
 actions = ['Research', 'Drugs', 'Education']
-combinations = [('Research', 8), ('nothing', 9)]
+combinations = [('Research', 5), ('nothing', 6)]
 for a in ['Drugs', 'Education']:
-    for i in range(8):
+    for i in range(5):
         combinations.append((a, i))
 
 OPERATORS = [Operator('Invest in ' + a + ' for ' + REGIONS[loc] + ' ($' + str(action_costs[a]) + ')',

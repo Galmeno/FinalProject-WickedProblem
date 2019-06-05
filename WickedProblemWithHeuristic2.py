@@ -16,7 +16,7 @@ count = 40
 def h(s):
   global count
   ''' returns the number of regions that have not reached their goal states '''
-  goal_state_sf = [0.0204, 0.03035, 0.0269, 0.0159, 0.0278, 0.04645, 0.0242, 0.0409]
+  goal_state_sf = [0.0204, 0.03565, 0.0367, 0.026, 0.0159]
   goal_state_treatment = 0.9
 
   # if research is being started in a state make that a higher priority
@@ -24,7 +24,7 @@ def h(s):
   # count the difference of sf and goal states and the difference of treatment and goal states
 
   sum = 0.0
-  for i in range(8):
+  for i in range(5):
     if (s.d[i]['sf'] > goal_state_sf[i]):
       sum += (s.d[i]['sf'] - goal_state_sf[i])
     if (s.d[i]['treatment'] < goal_state_treatment):
@@ -37,13 +37,13 @@ def h(s):
   #sum = sum * (s.yearly_cost/28000000000)
   if s.year == 0 and s.quarter == 1:
     count = 0
-    for i in range(8):
+    for i in range(5):
       val1 = s.d[i]['sf']
       val2 = s.d[i]['treatment']
       while val1 > goal_state_sf[i] or val2 < goal_state_treatment:
-        val1 = val1 * 0.75
+        val1 = val1 * 0.7
         val2 = val2 * 1.2
         count = count + 1
-  # if sum == 0:
-  #   return 0
-  return (count - s.year * 4 - s.quarter) + (count - (s.year-1) * 4 - s.quarter)*(sum) +3
+  if(goal_test(s)):
+    return 0
+  return (count - s.year * 4 - s.quarter) + (sum) + 5.0
